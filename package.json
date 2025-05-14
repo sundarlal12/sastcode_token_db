@@ -1,0 +1,26 @@
+{
+  "name": "sastcode_db",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://sundarlal12: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@github.com/sundarlal12/sastcode_token_db.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sundarlal12/sastcode_token_db/issues"
+  },
+  "homepage": "https://github.com/sundarlal12/sastcode_token_db#readme",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "pg": "^8.16.0"
+  }
+}
