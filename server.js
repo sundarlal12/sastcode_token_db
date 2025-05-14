@@ -185,9 +185,9 @@ app.post('/storeToken', async (req, res) => {
     const { client_id, git_secret, client_code, client_access_token, user_name, code } = req.body;
   
     // Validate all required fields
-    if (!client_id || !git_secret || !client_code || !client_access_token || !user_name || !code) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
+    // if ( !client_code || !client_access_token || !user_name || !code) {
+    //   return res.status(400).json({ error: 'Missing required fields' });
+    // }
   
     try {
       // Store the token in the database with correct column names
