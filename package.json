@@ -4,11 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://sundarlal12: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@github.com/sundarlal12/sastcode_token_db.git"
+    "url": "git+https://github.com/sundarlal12/sastcode_token_db.git"
   },
   "keywords": [],
   "author": "",
