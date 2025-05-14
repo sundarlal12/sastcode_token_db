@@ -94,18 +94,18 @@
 
 // // API to store token and user details in the database
 // app.post('/storeToken', async (req, res) => {
-//     const { client_id, git_secret, client_code, client_access_token, user_name, code } = req.body;
+//     const { client_id, git_secret, email, client_access_token, user_name, code } = req.body;
   
 //     // Check if all required fields are provided
-//     if (!client_id || !git_secret || !client_code || !client_access_token || !user_name || !code) {
+//     if (!client_id || !git_secret || !email || !client_access_token || !user_name || !code) {
 //       return res.status(400).json({ error: 'Missing required fields' });
 //     }
   
 //     try {
 //       // Insert the user details into the database using correct column names
 //       const result = await pool.query(
-//         'INSERT INTO github_user_details (git_client_id, git_client_secret, client_code, client_access_token, user_name, code) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-//         [client_id, git_secret, client_code, client_access_token, user_name, code]
+//         'INSERT INTO github_user_details (git_client_id, git_client_secret, email, client_access_token, user_name, code) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+//         [client_id, git_secret, email, client_access_token, user_name, code]
 //       );
       
 //       res.status(201).json({ message: 'User details stored successfully', data: result.rows[0] });
@@ -182,18 +182,18 @@ const pool = new Pool({
 // API to store token and user details in the database
 app.post('/storeToken', async (req, res) => {
     // Destructure the correct field names from the request body
-    const { client_id, git_secret, client_code, client_access_token, user_name, code } = req.body;
+    const { client_id, git_secret, email, client_access_token, user_name, code } = req.body;
   
     // Validate all required fields
-    // if ( !client_code || !client_access_token || !user_name || !code) {
+    // if ( !email || !client_access_token || !user_name || !code) {
     //   return res.status(400).json({ error: 'Missing required fields' });
     // }
   
     try {
       // Store the token in the database with correct column names
       const result = await pool.query(
-        'INSERT INTO github_user_details(git_client_id, git_client_secret, client_code, client_access_token, user_name, code) VALUES($1, $2, $3, $4, $5, $6) RETURNING id, user_name, created_at, code',
-        [client_id, git_secret, client_code, client_access_token, user_name, code] // Use the destructured variables here
+        'INSERT INTO github_user_details(git_client_id, git_client_secret, email, client_access_token, user_name, code) VALUES($1, $2, $3, $4, $5, $6) RETURNING id, user_name, created_at, code',
+        [client_id, git_secret, email, client_access_token, user_name, code] // Use the destructured variables here
       );
   
       // Return the result with only the necessary fields
@@ -231,7 +231,7 @@ app.post('/getToken', async (req, res) => {
   try {
     // Retrieve user details from the database based on the username
     const result = await pool.query(
-      `SELECT client_access_token, git_client_id, user_name 
+      `SELECT client_access_token, git_client_id, user_name, email 
       FROM github_user_details 
       WHERE user_name = $1`,
       [username]
