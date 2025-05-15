@@ -233,7 +233,7 @@ app.post('/getToken', async (req, res) => {
     const result = await pool.query(
       `SELECT client_access_token, code, user_name, email 
       FROM github_user_details 
-      WHERE user_name = $1`,
+      WHERE user_name = $1 order by id desc limit 1`,
       [username]
     );
 
