@@ -231,7 +231,7 @@ app.post('/getToken', async (req, res) => {
   try {
     // Retrieve user details from the database based on the username
     const result = await pool.query(
-      `SELECT client_access_token, git_client_id, user_name, email 
+      `SELECT client_access_token, code, user_name, email 
       FROM github_user_details 
       WHERE user_name = $1`,
       [username]
