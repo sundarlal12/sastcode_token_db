@@ -93,9 +93,18 @@ app.use(bodyParser.json());
     });
 
     // Add a test route
+    // app.get('/', (req, res) => {
+    //   res.send('Welcome to Secure Code VAPT');
+    // });
+
     app.get('/', (req, res) => {
-      res.send('Welcome to Secure Code VAPT');
-    });
+  res.json({
+    message: "🔐 Welcome to VAPTlabs – Your Code, Secured.",
+    description: "We provide cutting-edge Secure Code Reviews, Vulnerability Assessments, and Compliance Solutions. Protect your applications before attackers find a way in.",
+    contact: "contact@vaptlabs.com"
+  });
+});
+
 
     // ✅ Start server *inside* the IIFE
     app.listen(port, () => {
