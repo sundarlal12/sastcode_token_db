@@ -121,19 +121,20 @@ app.use(bodyParser.json());
       return res.status(404).json({ error: 'User not found for this platform' });
     }
 
-    const row = rows[0];
+   // const row = rows[0];
+res.status(200).json({ message: 'User found', data: rows[0] });
+    // res.status(200).json({
+    //   message: 'User found',
+    //   data: {
+    //     client_access_token: row.client_access_token,
+    //     code: row.code,
+    //     user_name: row.user_name,
+    //     email: row.email,
+    //     git_client_id: row.git_client_id,
+    //     platform: row.git_client_secret 
+    //   }
+    // });
 
-    res.status(200).json({
-      message: 'User found',
-      data: {
-        client_access_token: row.client_access_token,
-        code: row.code,
-        user_name: row.user_name,
-        email: row.email,
-        git_client_id: row.git_client_id,
-        platform: row.git_client_secret 
-      }
-    });
   } catch (error) {
     console.error('Error retrieving token:', error);
     res.status(500).json({ error: 'Database error' });
