@@ -63,83 +63,73 @@ app.use(bodyParser.json());
     });
 
     // Get token
-    // app.post('/getToken', async (req, res) => {
-    //   const { username,platform } = req.body;
-
-    //   if (!username) {
-    //     return res.status(400).json({ error: 'Username is required' });
-    //   }
-
-    //   try {
-    //     const [rows] = await pool.execute(
-    //       `SELECT client_access_token, code, user_name, email 
-    //        FROM github_user_details 
-    //        WHERE user_name = ? 
-    //        ORDER BY id DESC 
-    //        LIMIT 1`,
-    //       [username]
-    //     );
-
-    //     if (rows.length === 0) {
-    //       return res.status(404).json({ error: 'User not found' });
-    //     }
-
-    //     res.status(200).json({ message: 'User found', data: rows[0] });
-
-    //   } catch (error) {
-    //     console.error('Error retrieving token:', error);
-    //     res.status(500).json({ error: 'Database error' });
-    //   }
-    // });
-
     app.post('/getToken', async (req, res) => {
-  try {
-    const { username, platform } = req.body;
+      const { username,platform } = req.body;
 
-    if (!username || !platform) {
-      return res.status(400).json({ error: 'Username and platform are required' });
-    }
+      if (!username) {
+        return res.status(400).json({ error: 'Username is required' });
+      }
 
-    const sql = `
-      SELECT 
-        client_access_token,
-        code,
-        user_name,
-        email,
-        git_client_id,
-        git_client_secret
-      FROM github_user_details
-      WHERE user_name = ? 
-        AND git_client_secret = ?
-      ORDER BY id DESC 
-      LIMIT 1
-    `;
+      try {
+        const [rows] = await pool.execute(
+          `SELECT client_access_token, code, user_name, email 
+           FROM github_user_details 
+           WHERE user_name = ? 
+           ORDER BY id DESC 
+           LIMIT 1`,
+          [username]
+        );
 
-    const [rows] = await pool.execute(sql, [username, platform]);
+        if (rows.length === 0) {
+          return res.status(404).json({ error: 'User not found' });
+        }
 
-    if (!rows || rows.length === 0) {
-      return res.status(404).json({ error: 'User not found for this platform' });
-    }
+        res.status(200).json({ message: 'User found', data: rows[0] });
 
-   // const row = rows[0];
-res.status(200).json({ message: 'User found', data: rows[0] });
-    // res.status(200).json({
-    //   message: 'User found',
-    //   data: {
-    //     client_access_token: row.client_access_token,
-    //     code: row.code,
-    //     user_name: row.user_name,
-    //     email: row.email,
-    //     git_client_id: row.git_client_id,
-    //     platform: row.git_client_secret 
-    //   }
-    // });
+      } catch (error) {
+        console.error('Error retrieving token:', error);
+        res.status(500).json({ error: 'Database error' });
+      }
+    });
 
-  } catch (error) {
-    console.error('Error retrieving token:', error);
-    res.status(500).json({ error: 'Database error' });
-  }
-});
+//     app.post('/getToken', async (req, res) => {
+//   try {
+//     const { username, platform } = req.body;
+
+//     if (!username || !platform) {
+//       return res.status(400).json({ error: 'Username and platform are required' });
+//     }
+
+//     const sql = `
+//       SELECT 
+//         client_access_token,
+//         code,
+//         user_name,
+//         email,
+//         git_client_id,
+//         git_client_secret
+//       FROM github_user_details
+//       WHERE user_name = ? 
+//         AND git_client_secret = ?
+//       ORDER BY id DESC 
+//       LIMIT 1
+//     `;
+
+//     const [rows] = await pool.execute(sql, [username, platform]);
+
+//     if (!rows || rows.length === 0) {
+//       return res.status(404).json({ error: 'User not found for this platform' });
+//     }
+
+//    // const row = rows[0];
+// res.status(200).json({ message: 'User found', data: rows[0] });
+   
+
+//   } catch (error) {
+//     console.error('Error retrieving token:', error);
+//     res.status(500).json({ error: 'Database error' });
+//   }
+// });
 
 
     // Add a test route
