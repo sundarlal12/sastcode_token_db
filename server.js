@@ -14,10 +14,10 @@ process.on('uncaughtException', (err) => {
 });
 
 const app = express();
-const port = process.env.PORT || 3001;
+const webPort = process.env.PORT || 3001;
 app.use(bodyParser.json());
 
-// Validate required env
+// Validate required env (quick fail early)
 const requiredEnv = ['DB_HOST','DB_USER','DB_PASSWORD','DB_NAME'];
 for (const v of requiredEnv) {
   if (!process.env[v]) {
@@ -26,8 +26,9 @@ for (const v of requiredEnv) {
   }
 }
 
+let pool; // will be assigned when success
+
 (async () => {
-  let pool;
   try {
     const host = process.env.DB_HOST;
     const portNum = Number(process.env.DB_PORT || 3306);
@@ -59,10 +60,10 @@ for (const v of requiredEnv) {
       });
     } catch (probeErr) {
       console.warn('TCP probe failed:', probeErr && probeErr.message ? probeErr.message : probeErr);
-      // continue to create pool — pool will fail but logs will be clearer
+      // continue — we still attempt to create pool; logs will show why it fails
     }
 
-    // Create pool with sensible timeouts
+    // Create pool with valid options (removed acquireTimeout)
     pool = await mysql.createPool({
       host,
       user: process.env.DB_USER,
@@ -70,10 +71,10 @@ for (const v of requiredEnv) {
       database: process.env.DB_NAME,
       port: portNum,
       waitForConnections: true,
-      connectionLimit: 10,
-      queueLimit: 0,
-      connectTimeout: 10000,  // 10s
-      acquireTimeout: 20000,  // 20s
+      connectionLimit: 100000,
+      //queueLimit: 0,
+      connectTimeout: 10000,  // 10s connect timeout
+      // NOTE: acquireTimeout was removed because mysql2 ignores it for Connection
     });
 
     // Quick ping to ensure DB reachable
@@ -101,7 +102,6 @@ for (const v of requiredEnv) {
             console.error('Giving up after retries. Last error stack:', err && err.stack ? err.stack : err);
             throw err;
           }
-          // exponential-ish backoff
           await new Promise(r => setTimeout(r, delay * attempt));
         }
       }
@@ -109,6 +109,7 @@ for (const v of requiredEnv) {
 
     // Health endpoint
     app.get('/health', async (req, res) => {
+      if (!pool) return res.status(500).json({ ok: false, error: 'Pool not created' });
       try {
         await pool.query('SELECT 1');
         res.json({ ok: true });
@@ -120,8 +121,9 @@ for (const v of requiredEnv) {
 
     // Store token
     app.post('/storeToken', async (req, res) => {
-      const { client_id, git_secret, email, client_access_token, user_name, code } = req.body;
+      if (!pool) return res.status(500).json({ error: 'DB pool not available' });
 
+      const { client_id, git_secret, email, client_access_token, user_name, code } = req.body;
       if (!client_id || !git_secret || !email || !client_access_token || !user_name || !code) {
         return res.status(400).json({ error: 'All fields are required' });
       }
@@ -151,28 +153,20 @@ for (const v of requiredEnv) {
         }
 
         res.status(201).json({ message: "Stored", data: rows[0] });
-
       } catch (error) {
-        // More detailed logs for debugging (do not expose SQL internals to clients)
         console.error('Error storing token after retries:', error && error.stack ? error.stack : error);
-        if (error && error.code) {
-          console.error('Error code:', error.code);
-        }
-        if (error && error.sqlMessage) {
-          console.error('SQL message:', error.sqlMessage);
-        }
-        // Provide useful hint to client logs while keeping internal details private
+        if (error && error.code) console.error('Error code:', error.code);
+        if (error && error.sqlMessage) console.error('SQL message:', error.sqlMessage);
         res.status(500).json({ error: 'Failed to store token after retries' });
       }
     });
 
     // Get token
     app.post('/getToken', async (req, res) => {
-      const { username, platform } = req.body;
+      if (!pool) return res.status(500).json({ error: 'DB pool not available' });
 
-      if (!username) {
-        return res.status(400).json({ error: 'Username is required' });
-      }
+      const { username, platform } = req.body;
+      if (!username) return res.status(400).json({ error: 'Username is required' });
 
       try {
         const [rows] = await withRetry(() =>
@@ -186,20 +180,13 @@ for (const v of requiredEnv) {
           )
         );
 
-        if (!rows || rows.length === 0) {
-          return res.status(404).json({ error: 'User not found' });
-        }
+        if (!rows || rows.length === 0) return res.status(404).json({ error: 'User not found' });
 
         res.status(200).json({ message: 'User found', data: rows[0] });
-
       } catch (error) {
         console.error('Error retrieving token after retries:', error && error.stack ? error.stack : error);
-        if (error && error.code) {
-          console.error('Error code:', error.code);
-        }
-        if (error && error.sqlMessage) {
-          console.error('SQL message:', error.sqlMessage);
-        }
+        if (error && error.code) console.error('Error code:', error.code);
+        if (error && error.sqlMessage) console.error('SQL message:', error.sqlMessage);
         res.status(500).json({ error: 'Database error after retries' });
       }
     });
@@ -214,15 +201,15 @@ for (const v of requiredEnv) {
     });
 
     // start server
-    app.listen(port, () => {
-      console.log(`🚀 Server running on port ${port}`);
+    app.listen(webPort, () => {
+      console.log(`🚀 Server running on port ${webPort}`);
     });
 
   } catch (err) {
     console.error('❌ Startup error (detailed):', err && err.stack ? err.stack : err);
-    // If pool partially created, try to show table existence for quick debug (best-effort)
+    // best-effort schema check if pool exists
     try {
-      if (typeof pool !== 'undefined') {
+      if (pool) {
         const [tables] = await pool.query("SHOW TABLES LIKE 'github_user_details'");
         console.error('SHOW TABLES result:', tables);
       }
