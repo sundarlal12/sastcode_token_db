@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: fastapi-app
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DB_USERNAME
+        fromDashboard: true
+      - key: DB_USER
+        fromDashboard: true
+      - key: DB_PASSWORD
+        fromDashboard: true
+      - key: DB_HOST
+        fromDashboard: true
+      - key: DB_NAME
+        fromDashboard: true
+      - key: DB_PORT
+        fromDashboard: true
