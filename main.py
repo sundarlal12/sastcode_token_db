@@ -113,6 +113,34 @@ def store_token(payload: StoreTokenIn):
         cur.close()
         db.close()
 
+# @app.post("/getToken")
+# def get_token(payload: GetTokenIn):
+#     if not payload.username:
+#         raise HTTPException(status_code=400, detail="Username is required")
+
+#     db = get_db_connection()
+#     cur = db.cursor(dictionary=True)
+#     try:
+#         sql = """
+#             SELECT client_access_token, code, user_name, email
+#             FROM github_user_details
+#             WHERE user_name = %s AND git_client_secret = %s
+#             ORDER BY id DESC
+#             LIMIT 1
+#         """
+#         cur.execute(sql, (payload.username, payload.platform))
+#         row = cur.fetchone()
+#         if not row:
+#             raise HTTPException(status_code=404, detail="User not found")
+#         return {"message": "User found", "data": row}
+#     except mysql.connector.Error as merr:
+#         raise HTTPException(status_code=500, detail=f"MySQL error: {merr.msg if hasattr(merr,'msg') else str(merr)}")
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+#     finally:
+#         cur.close()
+#         db.close()
+
 @app.post("/getToken")
 def get_token(payload: GetTokenIn):
     if not payload.username:
@@ -131,7 +159,9 @@ def get_token(payload: GetTokenIn):
         cur.execute(sql, (payload.username, payload.platform))
         row = cur.fetchone()
         if not row:
-            raise HTTPException(status_code=404, detail="User not found")
+            # Return JSON body instead of raising HTTPException
+            return {"message": "User not found"}
+
         return {"message": "User found", "data": row}
     except mysql.connector.Error as merr:
         raise HTTPException(status_code=500, detail=f"MySQL error: {merr.msg if hasattr(merr,'msg') else str(merr)}")
