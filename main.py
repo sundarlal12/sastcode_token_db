@@ -61,7 +61,7 @@ def get_db_connection():
 def root():
     return {
         "message": "🔐 Welcome to VAPTlabs – Your Code, Secured.",
-        "description": "Simple FastAPI token service",
+        "description": "We provide cutting-edge Secure Code Reviews, Vulnerability Assessments, and Compliance Solutions. Protect your applications before attackers find a way in.",
         "contact": "contact@vaptlabs.com",
     }
 
