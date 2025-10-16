@@ -29,7 +29,8 @@ DB_CONFIG = {
     "password": DB_PASSWORD,
     "host": DB_HOST,
     "dbname": DB_NAME,
-    "port": DB_PORT
+    "port": DB_PORT,
+    "sslmode": "require" 
 
 }
 
