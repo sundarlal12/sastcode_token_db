@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
 import mysql.connector
+import psycopg2
+from psycopg2.extras import RealDictCursor
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional
