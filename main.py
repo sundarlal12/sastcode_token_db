@@ -19,7 +19,7 @@ DB_NAME = os.getenv("DB_NAME")
 # DB_PORT = int(os.getenv("DB_PORT", 3306)),
 
 DB_PORT = int(os.getenv("DB_PORT", "5432"))
-DB_SCHEMA = os.getenv("DB_SCHEMA", "public")
+DB_SCHEMA = os.getenv("DB_SCHEMA", "sastcode_schema")
 
 if not all([DB_USER, DB_PASSWORD, DB_HOST, DB_NAME]):
     raise SystemExit("Missing required DB environment variables (DB_USER/DB_USERNAME, DB_PASSWORD, DB_HOST, DB_NAME)")
