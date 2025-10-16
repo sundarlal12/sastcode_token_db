@@ -28,10 +28,9 @@ DB_CONFIG = {
     "user": DB_USER,
     "password": DB_PASSWORD,
     "host": DB_HOST,
-    "database": DB_NAME,
-    "port": DB_PORT,
-    "raise_on_warnings": True,
-    "autocommit": True
+    "dbname": DB_NAME,
+    "port": DB_PORT
+
 }
 
 
