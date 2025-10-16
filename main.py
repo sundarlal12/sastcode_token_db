@@ -18,7 +18,7 @@ DB_HOST = os.getenv("DB_HOST")
 DB_NAME = os.getenv("DB_NAME")
 # DB_PORT = int(os.getenv("DB_PORT", 3306)),
 
-DB_PORT = int(os.getenv("DB_PORT", 5432))
+DB_PORT = int(os.getenv("DB_PORT", "5432"))
 DB_SCHEMA = os.getenv("DB_SCHEMA", "public")
 
 if not all([DB_USER, DB_PASSWORD, DB_HOST, DB_NAME]):
