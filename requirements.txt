@@ -5,3 +5,4 @@ python-dotenv
 pydantic
 gunicorn
 requests
+psycopg2-binary
