@@ -19,7 +19,7 @@ DB_NAME = os.getenv("DB_NAME")
 # DB_PORT = int(os.getenv("DB_PORT", 3306)),
 
 DB_PORT = int(os.getenv("DB_PORT", "5432"))
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:QSUy1QeT0K9469ZtXxbu@db.bnqlammtlewzddohjdyo.supabase.co:5432/postgres")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres.bnqlammtlewzddohjdyo:QSUy1QeT0K9469ZtXxbu@aws-1-ap-south-1.pooler.supabase.com:6543/postgres")
 DB_SCHEMA = os.getenv("DB_SCHEMA", "sastcode_schema")
 
 if not all([DB_USER, DB_PASSWORD, DB_HOST, DB_NAME]):
